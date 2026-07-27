@@ -2,64 +2,92 @@
 
 > *What if your source code could never be stolen — not because it's hidden, but because it mathematically cannot be read?*
 
-Arcanum is a programming language concept where source code is automatically converted into **zero-knowledge cryptographic circuits** at compile time. Plaintext source never exists post-compilation — not on the server, not in memory, not anywhere an attacker could find it.
+Arcanum is a zero-knowledge compiler layer for languages developers already use. Write code in **C++, Rust, JavaScript, TypeScript, Go** — or any LLVM / RISC-V compatible language. Arcanum transforms it into a zero-knowledge arithmetic circuit at compile time. Plaintext source never exists post-compilation.
 
 ---
 
 ## The Problem
 
-Every line of source code that runs in the world exists, at some point, as readable plaintext. This is the original vulnerability of software security. Firewalls, obfuscation, and encryption at rest are all variations of the same idea: hide the key, not the lock. If the key is found, the code is exposed.
+Every line of source code that runs in the world exists, at some point, as readable plaintext. Firewalls, obfuscation, and encryption at rest are all variations of the same idea: hide the key, not the lock. If the key is found, the code is exposed.
 
 Arcanum explores a different question: **what would software look like if source code privacy were treated as a first principle?**
 
 ---
 
-## Core Idea
+## How It Works
 
-When a developer writes code in Arcanum, the compiler does not produce machine code or bytecode in the traditional sense. Instead, it produces a **zero-knowledge arithmetic circuit** — a mathematical representation of the program's logic that can be executed and verified, but cannot be reversed into its original form by any party other than the original author.
+Arcanum sits between your code and your compiler. You write in the language you already know. Arcanum does the rest.
 
-- ✅ Code is verifiable — anyone can confirm it ran correctly
-- ✅ Code is executable — it produces real outputs
-- ❌ Code is not readable — the logic remains permanently private
+```bash
+# Your existing Rust code — unchanged
+fn transfer_funds(sender: &Account, receiver: &Account, amount: u64) {
+    assert!(sender.balance >= amount);
+    sender.balance -= amount;
+    receiver.balance += amount;
+}
+
+# Compile with Arcanum
+$ arcanum compile transfer.rs --output transfer.zkc
+
+# Output: transfer.zkc (zero-knowledge circuit)
+# → Mathematically unreadable without original source
+# → Fully executable and verifiable by any third party
+# → No ZK knowledge required from the developer
+```
+
+- ✅ Code is **verifiable** — anyone can confirm it ran correctly
+- ✅ Code is **executable** — it produces real outputs
+- ❌ Code is **not readable** — the logic remains permanently private
 
 ---
 
 ## Architecture
 
-The system is built on three layers:
-
 | Layer | Role |
 |---|---|
-| **Compiler** | Translates source into ZK arithmetic circuits (R1CS / STARK-compatible) |
-| **Proof System** | Generates zero-knowledge proofs for each execution (STARK-based for post-quantum resistance) |
-| **Verifier** | Lightweight layer for third-party verification — no access to internal logic required |
+| **Compiler Layer** | Accepts C++, Rust, JS, TS, Go (via LLVM / RISC-V) and transforms source into STARK-compatible arithmetic circuits |
+| **Proof System** | Generates zero-knowledge proofs (STARK-based) for each execution — post-quantum resistant, no trusted setup required |
+| **Verifier** | Lightweight third-party verification layer — confirms correct execution without accessing internal logic |
+
+---
+
+## How Arcanum Differs from Existing Tools
+
+| | zkLLVM / RISC Zero / SP1 | Arcanum |
+|---|---|---|
+| Primary goal | Verifiable execution | Source code privacy |
+| Source code readable? | ✅ Yes | ❌ Never |
+| Target users | Blockchain / ZK developers | Any software team |
+| ZK knowledge required | Yes | No |
+| Use case | Proving computation | Protecting intellectual property |
+
+Existing tools ask: *"Can we prove this code ran correctly?"*
+Arcanum asks: *"Can we make this code permanently unreadable — while still provably executable?"*
 
 ---
 
 ## Status
 
-This is a **conceptual whitepaper project** at pre-MVP stage. The architecture is intentionally open for critique, collaboration, and revision.
+This is a **conceptual whitepaper project** at pre-MVP stage. The architecture is open for critique, collaboration, and revision.
 
 
 ---
 
-## Related Work
+## Roadmap
 
-Arcanum sits at the intersection of several existing research directions:
-
-- **Circom** — ZK circuit DSL (requires ZK expertise; not a general-purpose language)
-- **SP1 / RISC Zero** — zkVMs for verifiable execution (source code remains readable)
-- **zkLLVM** — LLVM-based ZK compiler (research infrastructure, not developer-facing)
-
-The gap Arcanum addresses: a high-level language where **source code privacy** — not just execution verifiability — is the primary design goal.
+| Phase | Goal |
+|---|---|
+| **0 — Current** | Conceptual foundation, whitepaper, community feedback |
+| **1** | Proof of concept compiler layer: Rust/C++ → STARK circuit, end-to-end |
+| **2** | Multi-language support, formal specification, ZK researcher collaboration |
+| **3** | Developer tooling, IDE integrations, documentation |
+| **4** | Independent cryptographic audit, public beta |
 
 ---
 
 ## Contributing & Feedback
 
 This project is in its earliest stage. Feedback from ZK researchers, compiler engineers, and cryptographers is especially welcome.
-
-If you're interested in collaborating or have thoughts on the architecture, reach out:
 
 📬 mertatakan53@gmail.com
 
