@@ -45,3 +45,14 @@ Arcanum's cryptographic security model is formally specified in our companion re
 * **Mert Atakan** — *Founder & Chief Architect* ([ORCID](https://orcid.org/0009-0008-4681-7186)) — Conceptual framework, AG-ZKP isolation architecture, and B2G strategy.
 * **M. Zidan Fatonie** — *Founding Systems Architect* — Rust compiler pipeline, zkVM integration, and L2 verifier systems.
 * **Anjul Khatri** — *ZK Research Co-Author & Early Contributor* — Circuit formalization, Groth16/PLONK state-transition analysis, and comparative cryptographic modeling.
+* ## 📜 Licensing (Dual-License Model)
+
+Arcanum and the AG-ZKP reference implementation are distributed under a **Dual-License** model:
+
+1. **Open-Source License (GNU AGPLv3):** 
+   This software is free and open-source under the terms of the [GNU Affero General Public License v3.0](LICENSE). It is fully compliant with open-source research grants (including NLnet / NGI). If you modify or run this software over a network (e.g., as a cloud/SaaS service or managed proxy), you must make your complete source code available under the AGPLv3.
+
+2. **Commercial Enterprise License:** 
+   For organizations, cloud backup providers, and enterprise custodians that wish to integrate Arcanum / AG-ZKP into proprietary, closed-source software, hardware appliances, or commercial SaaS platforms without the copyleft obligations of the AGPLv3, a separate **Commercial License** is available from Arcanum Research.
+
+For commercial licensing inquiries, enterprise integrations, or partnerships, please contact: **mertatakan53@gmail.com**
