@@ -37,6 +37,13 @@ Arcanum's cryptographic security model is formally specified in our companion re
 | **Critical Infrastructure** | Nuclear, energy grid, and telecom software supply-chain attestation | Verifies deterministic builds offline before deployment to air-gapped industrial controllers. |
 | **Institutional Finance & L2s** | Proprietary Rust/C++ quantitative algorithms & RWA compliance | Verifies offline execution proofs on-chain via **Arbitrum Stylus** and Starknet verifiers. |
 | **Sovereign AI Systems** | High-value model weights & confidential inference attestation | Locks model parameters inside $\mathcal{P}_{\text{AG}}$ while proving authentic inference execution. |
+### Architectural Extension: Sanitized Air-Gapped ZK Sandbox (Lite / SDK Profile)
+
+Alongside the hardware-enforced Split-VM (KVM/QEMU and Qubes OS) isolation profile, the Arcanum architecture defines an **Air-Gapped ZK Sandbox** execution mode for lightweight developer SDKs, mobile/desktop wallets, and high-density serverless proving nodes:
+
+1. **Logical Air-Gap Enforcement:** Untrusted zero-knowledge provers execute inside an unprivileged, network-isolated sandbox enforced via Linux kernel namespaces (`CLONE_NEWNET`, `CLONE_NEWIPC`), strict system-call filtering (`seccomp-bpf`), WebAssembly (`WASI` capability isolation), or lightweight MicroVMs (Firecracker), combined with mandatory RAM page locking (`mlock`/`VirtualLock`) and post-execution zeroization.
+2. **Unidirectional Sanitizer Pipe:** The sandboxed prover has zero socket or network controller access; its sole permitted I/O descriptor is a unidirectional byte pipe connected directly to the trusted host-side **Cryptographic Sanitizer**.
+3. **Subliminal-Free Output Guarantee:** Unlike conventional container or process sandboxes—which prevent direct network exfiltration but remain vulnerable to kleptographic leakage embedded inside valid proof outputs ($\pi$)—the Air-Gapped ZK Sandbox enforces deterministic Fiat-Shamir verification (Mode A for post-quantum hash-based STARKs) and algebraic proof rerandomization (Mode B for pairing-based SNARKs) before any proof bytes leave the host boundary.
 
 ---
 
