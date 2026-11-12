@@ -37,13 +37,17 @@ Arcanum's cryptographic security model is formally specified in our companion re
 | **Critical Infrastructure** | Nuclear, energy grid, and telecom software supply-chain attestation | Verifies deterministic builds offline before deployment to air-gapped industrial controllers. |
 | **Institutional Finance & L2s** | Proprietary Rust/C++ quantitative algorithms & RWA compliance | Verifies offline execution proofs on-chain via **Arbitrum Stylus** and Starknet verifiers. |
 | **Sovereign AI Systems** | High-value model weights & confidential inference attestation | Locks model parameters inside $\mathcal{P}_{\text{AG}}$ while proving authentic inference execution. |
-### Architectural Extension: Sanitized Air-Gapped ZK Sandbox (Lite / SDK Profile)
+### Architectural Extension: Network-Isolated ZK Sandbox (Lite / SDK Profile)
 
-Alongside the hardware-enforced Split-VM (KVM/QEMU and Qubes OS) isolation profile, the Arcanum architecture defines an **Air-Gapped ZK Sandbox** execution mode for lightweight developer SDKs, mobile/desktop wallets, and high-density serverless proving nodes:
+A software-isolated profile for SDKs, wallets and serverless provers, complementing the Split-VM profile.
 
-1. **Logical Air-Gap Enforcement:** Untrusted zero-knowledge provers execute inside an unprivileged, network-isolated sandbox enforced via Linux kernel namespaces (`CLONE_NEWNET`, `CLONE_NEWIPC`), strict system-call filtering (`seccomp-bpf`), WebAssembly (`WASI` capability isolation), or lightweight MicroVMs (Firecracker), combined with mandatory RAM page locking (`mlock`/`VirtualLock`) and post-execution zeroization.
-2. **Unidirectional Sanitizer Pipe:** The sandboxed prover has zero socket or network controller access; its sole permitted I/O descriptor is a unidirectional byte pipe connected directly to the trusted host-side **Cryptographic Sanitizer**.
-3. **Subliminal-Free Output Guarantee:** Unlike conventional container or process sandboxes—which prevent direct network exfiltration but remain vulnerable to kleptographic leakage embedded inside valid proof outputs ($\pi$)—the Air-Gapped ZK Sandbox enforces deterministic Fiat-Shamir verification (Mode A for post-quantum hash-based STARKs) and algebraic proof rerandomization (Mode B for pairing-based SNARKs) before any proof bytes leave the host boundary.
+1. **Threat model.** Protects against a malicious or compromised *prover library* (supply chain) exfiltrating the witness. It does **not** protect against a compromised host kernel or hypervisor, since the witness resides in host-visible RAM; use the Split-VM or TEE profiles for that.
+2. **Logical network isolation.** The prover runs without network access via Linux namespaces (`CLONE_NEWNET`, `CLONE_NEWIPC`), `seccomp-bpf`, WASI capability isolation or Firecracker MicroVMs, with `mlock`/`VirtualLock` and explicit zeroization. This is logical, not physical, isolation.
+3. **I/O.** Inputs enter through a read-only channel provisioned before execution. The only output is a one-way, fixed-size, fixed-rate pipe to the host-side sanitizer.
+4. **Subliminal-channel mitigation.**
+   - *Mode A (hash-based/STARK):* two independently built provers compute the proof deterministically; the sanitizer compares both outputs byte-for-byte. A single prover cannot be checked without the witness.
+   - *Mode B (pairing-based):* the sanitizer rerandomizes the proof without knowing the witness.
+5. **Limits.** Timing/size channels, shared-kernel side channels and hibernation files remain.
 
 ---
 
